@@ -1,0 +1,75 @@
+# Cursor AI Rules
+
+## Code Style
+- Follow TypeScript best practices
+- Use consistent indentation (2 spaces)
+- Use meaningful variable and function names
+- Add appropriate type annotations
+- Include JSDoc comments for complex functions
+- Keep functions small and focused on single responsibility
+- Never use Tailwind CSS, the project must use plain CSS.
+- Always use CSS classes, and place CSS styles in a shared location.
+- There should be no HTML elements using inline styles, always put styes in a page module file and use CSS classes.
+
+## Security
+- Never hardcode sensitive information (API keys, passwords)
+- Use environment variables for configuration
+- Validate user input
+- Sanitize data before database operations
+- Use parameterized queries for database operations
+
+## Performance
+- Optimize database queries
+- Implement proper error handling
+- Use appropriate data structures
+- Consider caching strategies
+- Minimize unnecessary re-renders in React components
+
+## Testing
+- Write unit tests for critical functionality
+- Include error case testing
+- Test edge cases
+- Document test coverage requirements
+
+## Documentation
+- Keep README files up to date
+- Document API endpoints
+- Include setup instructions
+- Document environment variables
+- Add inline comments for complex logic
+
+## Git Practices
+- Write clear commit messages
+- Follow conventional commits
+- Keep commits focused and atomic
+- Don't commit sensitive data
+- Use meaningful branch names
+
+## UI/UX
+- Follow accessibility guidelines (WCAG)
+- Ensure responsive design
+- Use consistent styling
+- Implement proper loading states
+- Provide clear error messages
+
+## API Design
+- Use RESTful principles
+- Version APIs appropriately
+- Document endpoints
+- Use proper HTTP methods
+- Implement rate limiting
+- Return appropriate status codes
+
+## Database
+- Use proper indexing
+- Implement data validation
+- Follow normalization principles
+- Use appropriate data types
+- Implement proper constraints
+
+## Error Handling
+- Provide meaningful error messages
+- Log errors appropriately
+- Implement proper error boundaries
+- Handle edge cases gracefully
+- Use try-catch blocks where necessary 
