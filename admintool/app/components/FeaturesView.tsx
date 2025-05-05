@@ -27,6 +27,7 @@ export default function FeaturesView() {
   const [newFeatureName, setNewFeatureName] = useState('');
   const [editingFeature, setEditingFeature] = useState<Feature | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchFeatureGroups();
@@ -42,6 +43,7 @@ export default function FeaturesView() {
 
   const fetchFeatureGroups = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/feature-groups');
       if (!response.ok) throw new Error('Failed to fetch feature groups');
       const data = await response.json();
@@ -49,6 +51,8 @@ export default function FeaturesView() {
     } catch (err) {
       setError('Failed to load feature groups');
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -148,6 +152,7 @@ export default function FeaturesView() {
           id="featureGroup"
           value={selectedFeatureGroup || ''}
           onChange={(e) => setSelectedFeatureGroup(Number(e.target.value) || null)}
+          disabled={isLoading}
         >
           <option value="">Select a feature group</option>
           {featureGroups.map(group => (
