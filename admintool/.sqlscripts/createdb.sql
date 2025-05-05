@@ -15,28 +15,20 @@ INSERT INTO body_shapes (id, name) VALUES
 -- This table contains the clothing categories.
 CREATE TABLE clothing_categories (
   id SERIAL PRIMARY KEY,
+  parent_id INTEGER DEFAULT NULL,
   "name" VARCHAR(50) NOT NULL
 );
 
 -- Insert clothing categories data.
-INSERT INTO clothing_categories (id, name) VALUES
-  (1, 'Tops'),
-  (2, 'Bottoms'),
-  (3, 'Dresses'),
-  (4, 'Layers'),
-  (5, 'Bags'),
-  (6, 'Shoes');
-
--- This table contains the clothing subcategories.
-CREATE TABLE clothing_subcategories (
-	id SERIAL PRIMARY KEY,
-	"name" VARCHAR(50) NOT NULL
-);
-
--- Insert clothing subcategories data.
-INSERT INTO clothing_subcategories (id, name) VALUES
-  (1, 'Pants'),
-  (2, 'Skirts');
+INSERT INTO clothing_categories (id, parent_id,name) VALUES
+  (1, NULL, 'Tops'),
+  (2, NULL, 'Bottoms'),
+  (3, NULL, 'Dresses'),
+  (4, NULL, 'Layers'),
+  (5, NULL, 'Bags'),
+  (6, NULL, 'Shoes'),
+  (7, 1, 'Pants'),
+  (8, 1, 'Skirts');
 
 -- This table contains the clothing feature groups, such as "Sleeve", "Neckline" etc.
 CREATE TABLE clothing_feature_groups (
@@ -81,26 +73,23 @@ INSERT INTO clothing_features (id, clothing_feature_group_id, name) VALUES
   (20, 2, 'Three-Quarter'),
   (21, 2, 'Full');
 
--- Now we need to create a table that contains the clothing categories and their feature groups.
--- This table will be used to determine which feature groups are available for a given clothing category.
--- For example, a top will have a neckline feature group, but a skirt will not. 
+-- An entry in this table indicates that a clothing category has a feature group.
 CREATE TABLE clothing_categories_feature_groups (
-  id SERIAL PRIMARY KEY,
   clothing_category_id INTEGER NOT NULL,
-  clothing_subcategory_id INTEGER,
-  clothing_feature_group_id INTEGER NOT NULL
+  clothing_feature_group_id INTEGER NOT NULL,
+  PRIMARY KEY (clothing_category_id, clothing_feature_group_id)
 );
 
 -- Insert the clothing categories and their feature groups.
-INSERT INTO clothing_categories_feature_groups (id, clothing_category_id, clothing_subcategory_id, clothing_feature_group_id) VALUES
-  (1, 1, NULL, 1), -- Tops have a neckline feature group.
-  (2, 1, NULL, 2); -- Tops have a sleeve feature group.
+INSERT INTO clothing_categories_feature_groups (clothing_category_id, clothing_feature_group_id) VALUES
+  (1, 1), -- Tops -> Neckline.
+  (1, 2); -- Tops -> Sleeve.
 
 -- This table contains what features are available for a given body shape.
 CREATE TABLE body_shapes_features (
-  id SERIAL PRIMARY KEY,
   body_shape_id INTEGER NOT NULL,
-  clothing_feature_id INTEGER NOT NULL
+  clothing_feature_id INTEGER NOT NULL,
+  PRIMARY KEY (body_shape_id, clothing_feature_id)
 );
 
 -- Insert the body shapes and their features.
@@ -200,15 +189,14 @@ CREATE TABLE users_clothing_items (
   user_id INTEGER NOT NULL,
   description VARCHAR(255) NOT NULL,
   image_file_name VARCHAR(255) NOT NULL,
-  clothing_category_id INTEGER NOT NULL,
-  clothing_subcategory_id INTEGER
+  clothing_category_id INTEGER NOT NULL
 );
 
 -- This table contains the features that have been selected for a given clothing item.
 CREATE TABLE users_clothing_items_features (
-  id SERIAL PRIMARY KEY,
   users_clothing_item_id INTEGER NOT NULL,
-  clothing_feature_id INTEGER NOT NULL
+  clothing_feature_id INTEGER NOT NULL,
+  PRIMARY KEY (users_clothing_item_id, clothing_feature_id)
 );
 
 

@@ -12,6 +12,9 @@ export default function Home() {
           <Link href="/combinations" className={`${styles.productManagerButton} ${styles.primary}`}>
             Combinations Tester
           </Link>
+          <Link href="/data-admin" className={`${styles.productManagerButton} ${styles.primary}`}>
+            Data Admin
+          </Link>
         </div>
       </main>
     </div>
