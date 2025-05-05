@@ -198,7 +198,7 @@ INSERT INTO body_shapes_features (id, body_shape_id, clothing_feature_id) VALUES
   (58, 5, 18), -- Normal
   (59, 5, 19), -- Elbow
   (60, 5, 20), -- Three-Quarter
-  (61, 5, 21), -- Full
+  (61, 5, 21); -- Full
 
 -- This table contains the features that have been selected for a given clothing item.
 CREATE TABLE clothing_items_features (
