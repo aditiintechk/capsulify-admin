@@ -1,17 +1,4 @@
-INSERT INTO body_shapes (id, name) VALUES
-  (1, 'Inverted Triangle'),
-  (2, 'Rectangle'),
-  (3, 'Apple'),
-  (4, 'Pear'),
-  (5, 'Hourglass');
 
-INSERT INTO clothing_categories (id, name) VALUES
-  (1, 'Tops'),
-  (2, 'Bottoms'),
-  (3, 'Dresses'),
-  (4, 'Layers'),
-  (5, 'Bags'),
-  (6, 'Shoes');
 
 INSERT INTO clothing_items (id, description, image_file_name, clothing_category_id) VALUES
   (2, 'Long Sleeve Top', 'Test.png', 1),
