@@ -1,17 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import styles from '../data-admin/page.module.css';
-import { CategoryWithSubcategories } from '../types/categories';
+import styles from './CategoriesView.module.css';
+
+interface Category {
+  id: number;
+  parent_id: number | null;
+  name: string;
+  parent_name: string | null;
+}
 
 export default function CategoriesView() {
-  const [categories, setCategories] = useState<CategoryWithSubcategories[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [newCategory, setNewCategory] = useState({ name: '', parent_id: null as number | null });
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [errorDetails, setErrorDetails] = useState<string | null>(null);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [editingCategory, setEditingCategory] = useState<number | null>(null);
-  const [editCategoryName, setEditCategoryName] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -19,160 +23,173 @@ export default function CategoriesView() {
 
   const fetchCategories = async () => {
     try {
-      console.log('Fetching categories...');
       const response = await fetch('/api/categories');
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error response:', errorData);
-        setError(errorData.error || 'Failed to fetch categories');
-        setErrorDetails(errorData.details || null);
-        return;
-      }
-      
+      if (!response.ok) throw new Error('Failed to fetch categories');
       const data = await response.json();
-      console.log('Categories data:', data);
       setCategories(data);
-      setError(null);
-      setErrorDetails(null);
+      setIsLoading(false);
     } catch (err) {
-      console.error('Error in fetchCategories:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
-      setErrorDetails(err instanceof Error ? err.stack || null : null);
-    } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleAddCategory = async () => {
-    if (!newCategoryName.trim()) return;
-
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const response = await fetch('/api/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newCategoryName }),
+        body: JSON.stringify(newCategory),
       });
-
-      if (!response.ok) throw new Error('Failed to add category');
-      
-      setNewCategoryName('');
+      if (!response.ok) throw new Error('Failed to create category');
+      setNewCategory({ name: '', parent_id: null });
       fetchCategories();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add category');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
-  const handleUpdateCategory = async (id: number) => {
-    if (!editCategoryName.trim()) return;
-
+  const handleUpdateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCategory) return;
     try {
-      const response = await fetch('/api/categories', {
+      const response = await fetch(`/api/categories/${editingCategory.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, name: editCategoryName }),
+        body: JSON.stringify({
+          name: editingCategory.name,
+          parent_id: editingCategory.parent_id
+        }),
       });
-
       if (!response.ok) throw new Error('Failed to update category');
-      
       setEditingCategory(null);
       fetchCategories();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update category');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
   const handleDeleteCategory = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this category?')) return;
-
     try {
-      const response = await fetch('/api/categories', {
+      const response = await fetch(`/api/categories/${id}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
       });
-
       if (!response.ok) throw new Error('Failed to delete category');
-      
       fetchCategories();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete category');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) {
-    return (
-      <div className={styles.errorContainer}>
-        <div className={styles.error}>Error: {error}</div>
-        {errorDetails && (
-          <div className={styles.errorDetails}>
-            <pre>{errorDetails}</pre>
-          </div>
-        )}
-        <button onClick={fetchCategories} className={styles.button}>
-          Retry
-        </button>
-      </div>
-    );
+  const getParentCategoryName = (category: Category) => {
+    return category.parent_name || 'None';
+  };
+
+  if (isLoading) {
+    return <div className={styles.loading}>Loading...</div>;
   }
 
   return (
-    <div className={styles.categoriesContainer}>
-      <div className={styles.addCategory}>
-        <input
-          type="text"
-          value={newCategoryName}
-          onChange={(e) => setNewCategoryName(e.target.value)}
-          placeholder="New category name"
-          className={styles.input}
-        />
-        <button onClick={handleAddCategory} className={styles.button}>
-          Add Category
-        </button>
-      </div>
+    <div className={styles.container}>
+      {error && <div className={styles.error}>{error}</div>}
+      
+      <form onSubmit={handleCreateCategory} className={styles.form}>
+        <h2>Create New Category</h2>
+        <div className={styles.formGroup}>
+          <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            value={newCategory.name}
+            onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="parent_id">Parent Category:</label>
+          <select
+            id="parent_id"
+            value={newCategory.parent_id || ''}
+            onChange={(e) => setNewCategory({ 
+              ...newCategory, 
+              parent_id: e.target.value ? Number(e.target.value) : null 
+            })}
+          >
+            <option value="">None</option>
+            {categories
+              .filter(category => category.parent_id === null)
+              .map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+          </select>
+        </div>
+        <button type="submit" className={styles.button}>Create Category</button>
+      </form>
 
       <div className={styles.categoriesList}>
-        {categories.map((category) => (
+        <h2>Categories</h2>
+        {categories.map(category => (
           <div key={category.id} className={styles.categoryItem}>
-            {editingCategory === category.id ? (
-              <div className={styles.editForm}>
-                <input
-                  type="text"
-                  value={editCategoryName}
-                  onChange={(e) => setEditCategoryName(e.target.value)}
-                  className={styles.input}
-                />
-                <button
-                  onClick={() => handleUpdateCategory(category.id)}
-                  className={styles.button}
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setEditingCategory(null)}
-                  className={styles.button}
-                >
-                  Cancel
-                </button>
-              </div>
+            {editingCategory?.id === category.id ? (
+              <form onSubmit={handleUpdateCategory} className={styles.form}>
+                <div className={styles.formGroup}>
+                  <input
+                    type="text"
+                    value={editingCategory.name}
+                    onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <select
+                    value={editingCategory.parent_id || ''}
+                    onChange={(e) => setEditingCategory({ 
+                      ...editingCategory, 
+                      parent_id: e.target.value ? Number(e.target.value) : null 
+                    })}
+                  >
+                    <option value="">None</option>
+                    {categories
+                      .filter(c => c.id !== category.id)
+                      .map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className={styles.buttonGroup}>
+                  <button type="submit" className={styles.button}>Save</button>
+                  <button 
+                    type="button" 
+                    onClick={() => setEditingCategory(null)}
+                    className={styles.buttonSecondary}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             ) : (
               <div className={styles.categoryContent}>
-                <span className={styles.categoryName}>{category.name}</span>
-                <div className={styles.categoryActions}>
-                  <button
-                    onClick={() => {
-                      setEditingCategory(category.id);
-                      setEditCategoryName(category.name);
-                    }}
-                    className={styles.button}
+                <div>
+                  <div className={styles.categoryName}>{category.name}</div>
+                  <div className={styles.parentCategory}>
+                    Parent: {getParentCategoryName(category)}
+                  </div>
+                </div>
+                <div className={styles.actions}>
+                  <button 
+                    onClick={() => setEditingCategory(category)}
+                    className={styles.buttonSecondary}
                   >
                     Edit
                   </button>
-                  <button
+                  <button 
                     onClick={() => handleDeleteCategory(category.id)}
-                    className={styles.button}
+                    className={styles.buttonDanger}
                   >
                     Delete
                   </button>
@@ -184,4 +201,4 @@ export default function CategoriesView() {
       </div>
     </div>
   );
-} 
+}

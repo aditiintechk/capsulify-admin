@@ -3,14 +3,18 @@
 import { useState } from 'react';
 import styles from './page.module.css';
 import CategoriesView from '../components/CategoriesView';
+import FeatureGroupsView from '../components/FeatureGroupsView';
+import FeaturesView from '../components/FeaturesView';
+import BodyTypeFeaturesView from '../components/BodyTypeFeaturesView';
 
-type TabType = 'categories' | 'features' | 'bodyTypeFeatures';
+type TabType = 'categories' | 'features' | 'bodyTypeFeatures' | 'featureGroups';
 
 export default function DataAdmin() {
   const [activeTab, setActiveTab] = useState<TabType>('categories');
 
   const tabs: { id: TabType; label: string }[] = [
     { id: 'categories', label: 'Categories' },
+    { id: 'featureGroups', label: 'Feature Groups' },
     { id: 'features', label: 'Features' },
     { id: 'bodyTypeFeatures', label: 'Body Type Features' },
   ];
@@ -34,8 +38,9 @@ export default function DataAdmin() {
 
         <div className={styles.tabContent}>
           {activeTab === 'categories' && <CategoriesView />}
-          {activeTab === 'features' && <div>Features View</div>}
-          {activeTab === 'bodyTypeFeatures' && <div>Body Type Features View</div>}
+          {activeTab === 'features' && <FeaturesView />}  
+          {activeTab === 'bodyTypeFeatures' && <BodyTypeFeaturesView />}
+          {activeTab === 'featureGroups' && <FeatureGroupsView />}
         </div>
       </main>
     </div>

@@ -1,20 +1,11 @@
 import { Pool } from 'pg';
 
-// Log database configuration (without sensitive data)
-console.log('Database Configuration:', {
-  host: process.env.DB_HOST || 'db.chceiitswdiczdpkihvo.supabase.co',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'postgres',
-  user: process.env.DB_USER || 'postgres',
-  schema: 'capsulify_live'
-});
-
 const pool = new Pool({
-  host: process.env.DB_HOST || 'db.chceiitswdiczdpkihvo.supabase.co',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'postgres',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '1qGygL29eeXkiGKRKKg6',
+  host: process.env.POSTGRES_HOST || 'db.chceiitswdiczdpkihvo.supabase.co',
+  port: parseInt(process.env.POSTGRES_PORT || '5432'),
+  database: process.env.POSTGRES_DB || 'postgres',
+  user: process.env.POSTGRES_USER || 'postgres',
+  password: process.env.POSTGRES_PASSWORD || '1qGygL29eeXkiGKRKKg6',
   ssl: {
     rejectUnauthorized: false // Required for Supabase
   }
@@ -25,7 +16,6 @@ pool.connect()
   .then(async client => {
     try {
       await client.query('SET search_path TO capsulify_live');
-      console.log('Database connection successful and search path set');
     } finally {
       client.release();
     }

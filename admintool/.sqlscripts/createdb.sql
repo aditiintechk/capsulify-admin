@@ -1,3 +1,6 @@
+-- Drop sequence for body_shapes
+DROP SEQUENCE IF EXISTS body_shapes_id_seq CASCADE;
+
 -- This table contains the body shapes.
 CREATE TABLE body_shapes (
   id SERIAL PRIMARY KEY,
@@ -11,6 +14,9 @@ INSERT INTO body_shapes (id, name) VALUES
   (3, 'Apple'),
   (4, 'Pear'),
   (5, 'Hourglass');
+
+-- Drop sequence for clothing_categories
+DROP SEQUENCE IF EXISTS clothing_categories_id_seq CASCADE;
 
 -- This table contains the clothing categories.
 CREATE TABLE clothing_categories (
@@ -30,6 +36,9 @@ INSERT INTO clothing_categories (id, parent_id,name) VALUES
   (7, 1, 'Pants'),
   (8, 1, 'Skirts');
 
+-- Drop sequence for clothing_feature_groups
+DROP SEQUENCE IF EXISTS clothing_feature_groups_id_seq CASCADE;
+
 -- This table contains the clothing feature groups, such as "Sleeve", "Neckline" etc.
 CREATE TABLE clothing_feature_groups (
   id SERIAL PRIMARY KEY,
@@ -39,6 +48,9 @@ CREATE TABLE clothing_feature_groups (
 INSERT INTO clothing_feature_groups (id, name) VALUES
   (1, 'Neckline'),
   (2, 'Sleeve');
+
+-- Drop sequence for clothing_features
+DROP SEQUENCE IF EXISTS clothing_features_id_seq CASCADE;
 
 -- This table contains the clothing features, such as "Long", "Short" etc.
 CREATE TABLE clothing_features (
@@ -175,6 +187,9 @@ INSERT INTO body_shapes_features (body_shape_id, clothing_feature_id) VALUES
 -- User data.
 ----------------------------------------------------------------------------------------------------------------
 
+-- Drop sequence for users
+DROP SEQUENCE IF EXISTS users_id_seq CASCADE;
+
 -- This table contains the users.
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -182,6 +197,9 @@ CREATE TABLE users (
   username VARCHAR(255),
   body_shape_id INTEGER
 );
+
+-- Drop sequence for users_clothing_items
+DROP SEQUENCE IF EXISTS users_clothing_items_id_seq CASCADE;
 
 -- This table contains the clothing items that belongs to a user.
 CREATE TABLE users_clothing_items (
@@ -198,6 +216,14 @@ CREATE TABLE users_clothing_items_features (
   clothing_feature_id INTEGER NOT NULL,
   PRIMARY KEY (users_clothing_item_id, clothing_feature_id)
 );
+
+-- Reset sequences for all tables
+SELECT setval('body_shapes_id_seq', (SELECT MAX(id) FROM body_shapes));
+SELECT setval('clothing_categories_id_seq', (SELECT MAX(id) FROM clothing_categories));
+SELECT setval('clothing_feature_groups_id_seq', (SELECT MAX(id) FROM clothing_feature_groups));
+SELECT setval('clothing_features_id_seq', (SELECT MAX(id) FROM clothing_features));
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
+SELECT setval('users_clothing_items_id_seq', (SELECT MAX(id) FROM users_clothing_items));
 
 
 

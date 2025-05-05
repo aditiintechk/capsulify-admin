@@ -8,4 +8,6 @@ When creating CSS styles for elements, always ensure the HTML elements use CSS c
 Always use class selectors, never element selectors, when putting code in page.modules.css.
 
 
-When changing or creating code that involves the database, verify any data models against the database schema found in "/.sqlscripts/createdb.sql".
+When changing or creating code that involves the database, verify any data models against the database schema found in "/.sqlscripts/createdb.sql". Always use Postgres SQL syntax and the Postgres database driver. New code in the project should be using Postgres, not MySQL.
+
+When writing Postgres SQL statements, never prefix table names with the schema. Always specify the schema by executing "SET search_path" before executing a query.
